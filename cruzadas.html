@@ -236,16 +236,16 @@ body{background:var(--deep);color:var(--parch);font-family:'IM Fell English',ser
 // ================================================================
 
 const FACTIONS = {
-  france:    { name:'Reino de Francia',       flag:'⚜️', rel:'cat', color:'#1a5da0', bonus:'Cultura +15/turno extra', desc:'Gran potencia católica de Occidente', starts:['paris'],                       g:120,m:60,f:70,c:80,p:50, inc:25, dif:'★★★☆☆' },
-  england:   { name:'Reino de Inglaterra',    flag:'🏰', rel:'cat', color:'#8b0000', bonus:'Ejército +10 gratis c/3t', desc:'Potencia naval y militar del norte',  starts:['londinium'],                  g:100,m:80,f:60,c:60,p:55, inc:20, dif:'★★★☆☆' },
-  hre:       { name:'Sacro Imperio Romano',   flag:'🦅', rel:'cat', color:'#2d5a1b', bonus:'Mayor prestigio por Fe',   desc:'Mayor reino de la Cristiandad',        starts:['sacro_imperio'],              g:150,m:70,f:80,c:70,p:80, inc:30, dif:'★★☆☆☆' },
-  byzantium: { name:'Imperio Bizantino',      flag:'🏛️', rel:'ort', color:'#7b1fa2', bonus:'Diplomacia: alianzas fáciles', desc:'Heredero de Roma. Ortodoxa y culta', starts:['constantinopla','grecia'],  g:200,m:55,f:75,c:90,p:70, inc:35, dif:'★★★☆☆' },
-  seljuks:   { name:'Sultanato Selyúcida',    flag:'🌙', rel:'sun', color:'#c67c00', bonus:'+25% en combate en campo',  desc:'Señores de Anatolia y Persia',         starts:['anatolia','bagdad','persia'], g:130,m:90,f:65,c:70,p:60, inc:25, dif:'★★☆☆☆' },
-  ayyubids:  { name:'Sultanato Ayubí',        flag:'🐦', rel:'sun', color:'#a07010', bonus:'+30 oro/t por el Nilo',    desc:'Herederos de Saladino. Egipto y Siria',starts:['egipto','arabia'],            g:160,m:75,f:70,c:75,p:65, inc:40, dif:'★★☆☆☆' },
-  almohads:  { name:'Califato Almohade',      flag:'☪️', rel:'sun', color:'#1a6e3c', bonus:'Yihad: +40 mil si atacado', desc:'Imperio bereber del norte de África',  starts:['marruecos','argelia','tunez'],g:110,m:65,f:90,c:60,p:55, inc:20, dif:'★★★☆☆' },
-  jerusalem: { name:'Reino de Jerusalén',     flag:'✝️', rel:'cat', color:'#c0a020', bonus:'+30 fe/t con Jerusalén',   desc:'El Estado Cruzado. Rodeado de enemigos',starts:['jerusalem','antioquia'],    g:80, m:70,f:100,c:50,p:75, inc:15, dif:'★☆☆☆☆' },
-  venice:    { name:'República de Venecia',   flag:'⚓', rel:'cat', color:'#1a5a8a', bonus:'+20 oro por costa',        desc:'La Serenísima. Reina del Mediterráneo', starts:['venecia'],                   g:250,m:40,f:50,c:80,p:60, inc:50, dif:'★★★★☆' },
-  portugal:  { name:'Reino de Portugal',      flag:'🛡️', rel:'cat', color:'#005a1e', bonus:'Reconquista: +20 vs moros',desc:'Joven reino forjado en la Reconquista', starts:['portugal','castilla'],       g:90, m:55,f:65,c:55,p:40, inc:18, dif:'★★★★☆' },
+  france:    { name:'Reino de Francia',       flag:'⚜️', rel:'cat', color:'#1a5da0', stroke:'#9ec9ff', bonus:'Cultura +15/turno extra', desc:'Gran potencia católica de Occidente', starts:['paris'],                       g:120,m:60,f:70,c:80,p:50, inc:25, dif:'★★★☆☆' },
+  england:   { name:'Reino de Inglaterra',    flag:'🏰', rel:'cat', color:'#8b0000', stroke:'#ff9a9a', bonus:'Ejército +10 gratis c/3t', desc:'Potencia naval y militar del norte',  starts:['londinium'],                  g:100,m:80,f:60,c:60,p:55, inc:20, dif:'★★★☆☆' },
+  hre:       { name:'Sacro Imperio Romano',   flag:'🦅', rel:'cat', color:'#2d5a1b', stroke:'#b7e29d', bonus:'Mayor prestigio por Fe',   desc:'Mayor reino de la Cristiandad',        starts:['sacro_imperio'],              g:150,m:70,f:80,c:70,p:80, inc:30, dif:'★★☆☆☆' },
+  byzantium: { name:'Imperio Bizantino',      flag:'🏛️', rel:'ort', color:'#7b1fa2', stroke:'#e3b5ff', bonus:'Diplomacia: alianzas fáciles', desc:'Heredero de Roma. Ortodoxa y culta', starts:['constantinopla','grecia'],  g:200,m:55,f:75,c:90,p:70, inc:35, dif:'★★★☆☆' },
+  seljuks:   { name:'Sultanato Selyúcida',    flag:'🌙', rel:'sun', color:'#c67c00', stroke:'#ffd27a', bonus:'+25% en combate en campo',  desc:'Señores de Anatolia y Persia',         starts:['anatolia','bagdad','persia'], g:130,m:90,f:65,c:70,p:60, inc:25, dif:'★★☆☆☆' },
+  ayyubids:  { name:'Sultanato Ayubí',        flag:'🐦', rel:'sun', color:'#a07010', stroke:'#f2c274', bonus:'+30 oro/t por el Nilo',    desc:'Herederos de Saladino. Egipto y Siria',starts:['egipto','arabia'],            g:160,m:75,f:70,c:75,p:65, inc:40, dif:'★★☆☆☆' },
+  almohads:  { name:'Califato Almohade',      flag:'☪️', rel:'sun', color:'#1a6e3c', stroke:'#91e8ba', bonus:'Yihad: +40 mil si atacado', desc:'Imperio bereber del norte de África',  starts:['marruecos','argelia','tunez'],g:110,m:65,f:90,c:60,p:55, inc:20, dif:'★★★☆☆' },
+  jerusalem: { name:'Reino de Jerusalén',     flag:'✝️', rel:'cat', color:'#c0a020', stroke:'#fff2a0', bonus:'+30 fe/t con Jerusalén',   desc:'El Estado Cruzado. Rodeado de enemigos',starts:['jerusalem','antioquia'],    g:80, m:70,f:100,c:50,p:75, inc:15, dif:'★☆☆☆☆' },
+  venice:    { name:'República de Venecia',   flag:'⚓', rel:'cat', color:'#1a5a8a', stroke:'#9fd9ff', bonus:'+20 oro por costa',        desc:'La Serenísima. Reina del Mediterráneo', starts:['venecia'],                   g:250,m:40,f:50,c:80,p:60, inc:50, dif:'★★★★☆' },
+  portugal:  { name:'Reino de Portugal',      flag:'🛡️', rel:'cat', color:'#005a1e', stroke:'#8fe0a9', bonus:'Reconquista: +20 vs moros',desc:'Joven reino forjado en la Reconquista', starts:['portugal','castilla'],       g:90, m:55,f:65,c:55,p:40, inc:18, dif:'★★★★☆' },
 };
 
 const R = {
@@ -420,8 +420,11 @@ function renderMap(){
     const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
     c.setAttribute('cx',r.x);c.setAttribute('cy',r.y);c.setAttribute('r',rad);
     c.setAttribute('fill',fc);
-    c.setAttribute('stroke',isSel?'#ffdd00':(isP?'rgba(255,255,255,0.9)':'rgba(200,169,110,0.4)'));
-    c.setAttribute('stroke-width',isSel?3:(isP?2:1));
+    const strokeColor=isSel
+      ?'#ffdd00'
+      :(ow!=='neutral'&&FACTIONS[ow]?.stroke?FACTIONS[ow].stroke:(isP?'rgba(255,255,255,0.9)':'rgba(200,169,110,0.4)'));
+    c.setAttribute('stroke',strokeColor);
+    c.setAttribute('stroke-width',isSel?3:(ow!=='neutral'?2:1));
     if(isJ)c.setAttribute('filter','url(#gf)');
     c.style.cursor='pointer';
     c.addEventListener('click',()=>selReg(k));
