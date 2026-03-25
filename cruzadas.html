@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✝ CRUZADAS ☪ — Simulador de Naciones</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --parch: #c8a96e; --parch-light: #e8d4a0; --parch-dark: #8a6832;
+  --ink: #1a0f00; --red: #8b1a1a; --gold: #c9922a; --gold-l: #f0c060;
+  --deep: #0a1628; --sea: #0d2440; --sea2: #1a3a5c;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--deep);color:var(--parch);font-family:'IM Fell English',serif;overflow:hidden;height:100vh;width:100vw;}
+
+/* START */
+#start{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 40%,#1a0a00 0%,#050508 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='1' fill='rgba(200,169,110,0.07)'/%3E%3C/svg%3E");}
+.ttl{font-family:'Cinzel Decorative',cursive;font-size:56px;font-weight:700;color:var(--gold);
+  text-shadow:0 0 60px rgba(201,146,42,.7),0 0 120px rgba(201,146,42,.3);letter-spacing:6px;text-align:center;}
+.ttl-sub{font-family:'Cinzel',serif;font-size:12px;letter-spacing:10px;color:var(--parch);opacity:.7;
+  margin-top:10px;text-transform:uppercase;text-align:center;}
+.sel-ttl{font-family:'Cinzel',serif;font-size:14px;letter-spacing:4px;color:var(--parch);
+  text-transform:uppercase;margin:28px 0 18px;opacity:.9;}
+.fgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:960px;padding:0 20px;}
+.fcard{background:linear-gradient(135deg,rgba(200,169,110,.1),rgba(200,169,110,.03));
+  border:1px solid rgba(201,146,42,.35);border-radius:4px;padding:14px 10px;text-align:center;
+  cursor:pointer;transition:all .3s;position:relative;overflow:hidden;}
+.fcard::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,146,42,.25),transparent);
+  opacity:0;transition:.3s;}
+.fcard:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(201,146,42,.25);}
+.fcard:hover::after{opacity:1;}
+.ff{font-size:28px;margin-bottom:6px;}
+.fn{font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:var(--gold);letter-spacing:1px;}
+.fd{font-size:9px;color:var(--parch);opacity:.65;margin-top:3px;line-height:1.4;}
+.fb{font-size:9px;margin-top:4px;font-style:italic;opacity:.75;}
+.fr{font-size:9px;margin-top:3px;}.fr.cat{color:#5b9bd5;}.fr.ort{color:#a78bfa;}.fr.sun{color:#34d399;}
+.fdif{font-size:9px;color:var(--gold-l);margin-top:4px;}
+
+/* GAME */
+#game{display:none;height:100vh;width:100vw;flex-direction:column;}
+#game.on{display:flex;}
+
+/* TOP BAR */
+#topbar{background:linear-gradient(90deg,rgba(20,10,0,.97),rgba(8,18,35,.97));
+  border-bottom:2px solid var(--gold);padding:5px 14px;
+  display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.sg{display:flex;align-items:center;gap:5px;padding:3px 8px;
+  background:rgba(201,146,42,.08);border:1px solid rgba(201,146,42,.25);border-radius:3px;min-width:70px;}
+.si{font-size:13px;}.sv{font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--gold);}
+.sl{font-size:9px;color:var(--parch);opacity:.65;}
+#nname{font-family:'Cinzel Decorative',cursive;font-size:13px;color:var(--gold);margin-right:auto;}
+#tdisp{font-family:'Cinzel',serif;font-size:11px;color:var(--parch);text-align:right;}
+#tyear{font-size:16px;color:var(--gold);font-weight:700;}
+
+/* MAIN */
+#main{display:flex;flex:1;overflow:hidden;}
+
+/* MAP */
+#mapp{flex:1;position:relative;overflow:hidden;
+  background:radial-gradient(ellipse at 45% 55%,#0d2a4a 0%,#061525 60%,#020b14 100%);}
+#msvg{width:100%;height:100%;}
+
+/* RIGHT PANEL */
+#rpanel{width:275px;flex-shrink:0;
+  background:linear-gradient(180deg,rgba(22,12,0,.97),rgba(8,18,35,.97));
+  border-left:2px solid var(--gold);display:flex;flex-direction:column;overflow:hidden;}
+.psec{border-bottom:1px solid rgba(201,146,42,.25);padding:10px 12px;}
+.ptitle{font-family:'Cinzel',serif;font-size:10px;text-transform:uppercase;
+  letter-spacing:2px;color:var(--gold);margin-bottom:7px;}
+
+/* ACTIONS */
+.abtn{display:flex;align-items:center;gap:7px;width:100%;padding:7px 9px;margin-bottom:5px;
+  background:rgba(201,146,42,.08);border:1px solid rgba(201,146,42,.25);
+  color:var(--parch);font-family:'IM Fell English',serif;font-size:11px;
+  cursor:pointer;border-radius:3px;transition:all .18s;text-align:left;}
+.abtn:hover:not(:disabled){background:rgba(201,146,42,.22);border-color:var(--gold);color:var(--gold-l);}
+.abtn:disabled{opacity:.3;cursor:not-allowed;}
+.ai{font-size:13px;flex-shrink:0;}.ac{font-size:9px;color:#e07070;margin-left:auto;white-space:nowrap;}
+#endbtn{width:100%;padding:9px;margin-top:8px;
+  background:linear-gradient(135deg,#8b1a1a,#4a0a0a);border:2px solid #c0392b;
+  color:var(--parch-light);font-family:'Cinzel',serif;font-size:12px;font-weight:700;
+  letter-spacing:2px;cursor:pointer;border-radius:3px;transition:all .2s;}
+#endbtn:hover{background:linear-gradient(135deg,#c0392b,#8b1a1a);box-shadow:0 4px 14px rgba(192,57,43,.4);}
+
+/* LOG */
+#logp{flex:1;overflow-y:auto;padding:8px;}
+.le{font-size:10px;padding:3px 0;border-bottom:1px solid rgba(201,146,42,.08);line-height:1.5;}
+.le.ev{color:#f0c060;}.le.wa{color:#ff6b6b;}.le.pe{color:#6be6c5;}.le.inf{color:var(--parch);opacity:.8;}.le.ai{color:#b8b0f0;}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:rgba(201,146,42,.4);border-radius:2px;}
+
+/* MODAL */
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(5px);
+  display:none;align-items:center;justify-content:center;z-index:200;}
+#modal.on{display:flex;}
+.mbox{background:linear-gradient(135deg,#1a0f00,#0a1628);border:2px solid var(--gold);
+  border-radius:6px;padding:28px;max-width:460px;width:90%;position:relative;}
+.mbox::before{content:'';position:absolute;top:7px;left:7px;right:7px;bottom:7px;
+  border:1px solid rgba(201,146,42,.25);border-radius:3px;pointer-events:none;}
+#mtitle{font-family:'Cinzel Decorative',cursive;font-size:19px;color:var(--gold);
+  text-align:center;margin-bottom:13px;text-shadow:0 0 20px rgba(201,146,42,.4);}
+#mtext{font-size:13px;line-height:1.7;margin-bottom:16px;color:var(--parch-light);}
+.mbtn{display:block;width:100%;padding:10px;
+  background:linear-gradient(135deg,rgba(201,146,42,.22),rgba(201,146,42,.07));
+  border:1px solid var(--gold);color:var(--gold-l);font-family:'Cinzel',serif;font-size:12px;
+  cursor:pointer;border-radius:3px;transition:all .2s;margin-bottom:7px;}
+.mbtn:hover{background:linear-gradient(135deg,rgba(201,146,42,.4),rgba(201,146,42,.15));}
+
+/* END */
+#endscr{position:fixed;inset:0;background:rgba(0,0,0,.92);
+  display:none;align-items:center;justify-content:center;z-index:300;flex-direction:column;text-align:center;}
+#endscr.on{display:flex;}
+.ettl{font-family:'Cinzel Decorative',cursive;font-size:52px;margin-bottom:14px;}
+.ettl.vic{color:var(--gold);text-shadow:0 0 80px rgba(201,146,42,.9);}
+.ettl.def{color:var(--red);text-shadow:0 0 80px rgba(139,26,26,.9);}
+.esub{font-size:15px;color:var(--parch);margin-bottom:30px;max-width:520px;line-height:1.7;}
+.ebtn{padding:13px 44px;background:linear-gradient(135deg,var(--gold),var(--parch-dark));
+  border:none;color:var(--ink);font-family:'Cinzel',serif;font-size:14px;
+  font-weight:700;cursor:pointer;border-radius:4px;letter-spacing:2px;}
+
+/* War animation */
+.wline{stroke:#ff4040;stroke-width:2;stroke-dasharray:6,3;animation:da .5s linear infinite;}
+@keyframes da{to{stroke-dashoffset:-9;}}
+/* Tooltip */
+#tt{position:fixed;z-index:500;background:rgba(8,14,22,.96);border:1px solid var(--gold);
+  padding:7px 11px;font-size:10px;border-radius:3px;pointer-events:none;max-width:180px;display:none;line-height:1.6;}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ PANTALLA DE INICIO ═══════════════ -->
+<div id="start">
+  <div style="margin-bottom:6px; font-size:13px; letter-spacing:8px; color:var(--parch); opacity:.4; text-transform:uppercase;">Anno Domini</div>
+  <div class="ttl">✝ CRUZADAS ☪</div>
+  <div class="ttl-sub">Simulador de Naciones · Era de las Cruzadas · 1095 A.D.</div>
+  <div class="sel-ttl">— Elige tu Nación —</div>
+  <div class="fgrid" id="fgrid"></div>
+  <div style="margin-top:20px;font-size:10px;opacity:.35;letter-spacing:3px;text-transform:uppercase;">
+    ⚔ Conquista · ✝ Fe · 💰 Economía · 🎭 Cultura · ☪ Ideología ⚔
+  </div>
+</div>
+
+<!-- ═══════════════ PANTALLA DE JUEGO ═══════════════ -->
+<div id="game">
+
+  <!-- BARRA SUPERIOR -->
+  <div id="topbar">
+    <div id="nname">—</div>
+    <div class="sg"><span class="si">💰</span><div><div class="sv" id="s-gold">0</div><div class="sl">ORO</div></div></div>
+    <div class="sg"><span class="si">⚔️</span><div><div class="sv" id="s-mil">0</div><div class="sl">EJÉRCITO</div></div></div>
+    <div class="sg"><span class="si">✝</span><div><div class="sv" id="s-fai">0</div><div class="sl">FE</div></div></div>
+    <div class="sg"><span class="si">🎭</span><div><div class="sv" id="s-cul">0</div><div class="sl">CULTURA</div></div></div>
+    <div class="sg"><span class="si">👑</span><div><div class="sv" id="s-pre">0</div><div class="sl">PRESTIGIO</div></div></div>
+    <div class="sg"><span class="si">🏰</span><div><div class="sv" id="s-ter">0</div><div class="sl">TERRIT.</div></div></div>
+    <div id="tdisp"><div id="tyear">1095 A.D.</div><div style="font-size:9px;opacity:.6;">Turno <span id="tnum">1</span>/100</div></div>
+  </div>
+
+  <!-- ÁREA PRINCIPAL -->
+  <div id="main">
+
+    <!-- MAPA SVG -->
+    <div id="mapp">
+      <svg id="msvg" viewBox="0 0 900 540" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <pattern id="seagrid" width="50" height="50" patternUnits="userSpaceOnUse">
+            <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,255,255,0.025)" stroke-width="1"/>
+          </pattern>
+          <radialGradient id="holyglow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="rgba(255,215,0,0.5)"/>
+            <stop offset="100%" stop-color="rgba(255,215,0,0)"/>
+          </radialGradient>
+          <filter id="gf"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="sf"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.6"/></filter>
+        </defs>
+        <rect width="900" height="540" fill="url(#seagrid)"/>
+        <!-- Sea labels -->
+        <text x="340" y="265" fill="rgba(80,140,210,0.18)" font-family="'IM Fell English',serif" font-style="italic" font-size="16" text-anchor="middle">Mare Nostrum</text>
+        <text x="680" y="460" fill="rgba(80,140,210,0.14)" font-family="'IM Fell English',serif" font-style="italic" font-size="11" text-anchor="middle">Mar Arábigo</text>
+        <text x="100" y="155" fill="rgba(80,140,210,0.14)" font-family="'IM Fell English',serif" font-style="italic" font-size="11" text-anchor="middle">Atlántico</text>
+        <!-- Jerusalem glow -->
+        <circle id="jglow" cx="505" cy="315" r="28" fill="url(#holyglow)" opacity="0.7"/>
+        <g id="clayer"></g>
+        <g id="rlayer"></g>
+        <g id="llayer"></g>
+      </svg>
+      <div id="tt"></div>
+    </div>
+
+    <!-- PANEL DERECHO -->
+    <div id="rpanel">
+
+      <!-- Info de región -->
+      <div class="psec" id="rinfo">
+        <div class="ptitle">📍 Territorio Seleccionado</div>
+        <div id="rdisp" style="font-size:10px;opacity:.45;font-style:italic;">Haz clic en un territorio del mapa</div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="psec">
+        <div class="ptitle">⚜ Acciones — <span id="aleft" style="color:var(--gold-l);">3</span> disponibles</div>
+        <div id="abtns"></div>
+        <button id="endbtn" onclick="endTurn()">⚔ FINALIZAR TURNO ⚔</button>
+      </div>
+
+      <!-- Crónica -->
+      <div class="psec" style="border-bottom:none;flex:1;overflow:hidden;display:flex;flex-direction:column;">
+        <div class="ptitle">📜 Crónica del Reino</div>
+        <div id="logp"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE EVENTOS -->
+<div id="modal">
+  <div class="mbox">
+    <div id="mtitle">Evento</div>
+    <div id="mtext"></div>
+    <button class="mbtn" id="mb1">Confirmar</button>
+    <button class="mbtn" id="mb2" style="display:none">Alternativa</button>
+  </div>
+</div>
+
+<!-- PANTALLA FINAL -->
+<div id="endscr">
+  <div class="ettl" id="ettl">Victoria</div>
+  <div class="esub" id="esub"></div>
+  <button class="ebtn" onclick="location.reload()">✝ Nueva Partida ✝</button>
+</div>
+
+<script>
+// ================================================================
+//   CRUZADAS — SIMULADOR DE NACIONES  (c) Anno Domini MLXCV
+// ================================================================
+
+const FACTIONS = {
+  france:    { name:'Reino de Francia',       flag:'⚜️', rel:'cat', color:'#1a5da0', bonus:'Cultura +15/turno extra', desc:'Gran potencia católica de Occidente', starts:['paris'],                       g:120,m:60,f:70,c:80,p:50, inc:25, dif:'★★★☆☆' },
+  england:   { name:'Reino de Inglaterra',    flag:'🏰', rel:'cat', color:'#8b0000', bonus:'Ejército +10 gratis c/3t', desc:'Potencia naval y militar del norte',  starts:['londinium'],                  g:100,m:80,f:60,c:60,p:55, inc:20, dif:'★★★☆☆' },
+  hre:       { name:'Sacro Imperio Romano',   flag:'🦅', rel:'cat', color:'#2d5a1b', bonus:'Mayor prestigio por Fe',   desc:'Mayor reino de la Cristiandad',        starts:['sacro_imperio'],              g:150,m:70,f:80,c:70,p:80, inc:30, dif:'★★☆☆☆' },
+  byzantium: { name:'Imperio Bizantino',      flag:'🏛️', rel:'ort', color:'#7b1fa2', bonus:'Diplomacia: alianzas fáciles', desc:'Heredero de Roma. Ortodoxa y culta', starts:['constantinopla','grecia'],  g:200,m:55,f:75,c:90,p:70, inc:35, dif:'★★★☆☆' },
+  seljuks:   { name:'Sultanato Selyúcida',    flag:'🌙', rel:'sun', color:'#c67c00', bonus:'+25% en combate en campo',  desc:'Señores de Anatolia y Persia',         starts:['anatolia','bagdad','persia'], g:130,m:90,f:65,c:70,p:60, inc:25, dif:'★★☆☆☆' },
+  ayyubids:  { name:'Sultanato Ayubí',        flag:'🐦', rel:'sun', color:'#a07010', bonus:'+30 oro/t por el Nilo',    desc:'Herederos de Saladino. Egipto y Siria',starts:['egipto','arabia'],            g:160,m:75,f:70,c:75,p:65, inc:40, dif:'★★☆☆☆' },
+  almohads:  { name:'Califato Almohade',      flag:'☪️', rel:'sun', color:'#1a6e3c', bonus:'Yihad: +40 mil si atacado', desc:'Imperio bereber del norte de África',  starts:['marruecos','argelia','tunez'],g:110,m:65,f:90,c:60,p:55, inc:20, dif:'★★★☆☆' },
+  jerusalem: { name:'Reino de Jerusalén',     flag:'✝️', rel:'cat', color:'#c0a020', bonus:'+30 fe/t con Jerusalén',   desc:'El Estado Cruzado. Rodeado de enemigos',starts:['jerusalem','antioquia'],    g:80, m:70,f:100,c:50,p:75, inc:15, dif:'★☆☆☆☆' },
+  venice:    { name:'República de Venecia',   flag:'⚓', rel:'cat', color:'#1a5a8a', bonus:'+20 oro por costa',        desc:'La Serenísima. Reina del Mediterráneo', starts:['venecia'],                   g:250,m:40,f:50,c:80,p:60, inc:50, dif:'★★★★☆' },
+  portugal:  { name:'Reino de Portugal',      flag:'🛡️', rel:'cat', color:'#005a1e', bonus:'Reconquista: +20 vs moros',desc:'Joven reino forjado en la Reconquista', starts:['portugal','castilla'],       g:90, m:55,f:65,c:55,p:40, inc:18, dif:'★★★★☆' },
+};
+
+const R = {
+  londinium:      {n:'Inglaterra',       x:150,y:72,  t:'cap', w:20,d:15,rel:'cat'},
+  paris:          {n:'Île-de-France',    x:208,y:112, t:'cap', w:25,d:10,rel:'cat'},
+  sacro_imperio:  {n:'Sacro Imperio',    x:297,y:98,  t:'cap', w:25,d:15,rel:'cat'},
+  estados_papales:{n:'Estados Papales',  x:308,y:178, t:'hol', w:20,d:10,rel:'cat'},
+  aragon:         {n:'Aragón',           x:215,y:192, t:'reg', w:15,d:10,rel:'cat'},
+  castilla:       {n:'Castilla',         x:165,y:213, t:'reg', w:15,d:10,rel:'cat'},
+  portugal:       {n:'Portugal',         x:122,y:228, t:'cap', w:12,d:8, rel:'cat'},
+  hungria:        {n:'Hungría',          x:372,y:112, t:'reg', w:18,d:12,rel:'cat'},
+  venecia:        {n:'Venecia',          x:328,y:150, t:'cap', w:30,d:12,rel:'cat'},
+  sicilia:        {n:'Sicilia',          x:325,y:218, t:'reg', w:18,d:10,rel:'cat'},
+  grecia:         {n:'Grecia',           x:398,y:200, t:'reg', w:15,d:10,rel:'ort'},
+  constantinopla: {n:'Constantinopla',   x:440,y:162, t:'cap', w:35,d:20,rel:'ort'},
+  anatolia:       {n:'Anatolia',         x:512,y:168, t:'cap', w:20,d:12,rel:'sun'},
+  antioquia:      {n:'Antioquía',        x:550,y:250, t:'cap', w:18,d:15,rel:'cat'},
+  siria:          {n:'Siria/Damasco',    x:538,y:292, t:'reg', w:22,d:12,rel:'sun'},
+  jerusalem:      {n:'✝ Jerusalén ✝',   x:507,y:320, t:'hol', w:25,d:15,rel:'mix'},
+  bagdad:         {n:'Bagdad',           x:618,y:278, t:'cap', w:28,d:15,rel:'sun'},
+  persia:         {n:'Persia',           x:688,y:260, t:'cap', w:22,d:12,rel:'sun'},
+  arabia:         {n:'Arabia',           x:582,y:372, t:'reg', w:15,d:8, rel:'sun'},
+  egipto:         {n:'Egipto',           x:455,y:365, t:'cap', w:30,d:15,rel:'sun'},
+  libia:          {n:'Libia',            x:370,y:342, t:'reg', w:12,d:8, rel:'sun'},
+  tunez:          {n:'Túnez',            x:292,y:332, t:'cap', w:15,d:10,rel:'sun'},
+  argelia:        {n:'Argelia',          x:218,y:342, t:'reg', w:12,d:8, rel:'sun'},
+  marruecos:      {n:'Marruecos',        x:145,y:328, t:'cap', w:15,d:10,rel:'sun'},
+};
+
+const CONN = [
+  ['londinium','paris'],
+  ['paris','sacro_imperio'],['paris','aragon'],['paris','estados_papales'],
+  ['sacro_imperio','hungria'],['sacro_imperio','venecia'],['sacro_imperio','estados_papales'],
+  ['estados_papales','venecia'],['estados_papales','sicilia'],['estados_papales','aragon'],
+  ['aragon','castilla'],['castilla','portugal'],['castilla','marruecos'],['portugal','marruecos'],
+  ['marruecos','argelia'],['argelia','tunez'],['tunez','libia'],['tunez','sicilia'],
+  ['sicilia','venecia'],['libia','egipto'],['egipto','arabia'],['egipto','jerusalem'],
+  ['hungria','constantinopla'],['venecia','grecia'],['grecia','constantinopla'],['grecia','siria'],
+  ['constantinopla','anatolia'],['anatolia','antioquia'],['anatolia','bagdad'],['anatolia','persia'],
+  ['antioquia','siria'],['siria','jerusalem'],['siria','bagdad'],
+  ['bagdad','persia'],['bagdad','arabia'],['arabia','jerusalem'],
+];
+
+const EVENTS = [
+  { id:'plague', title:'🦠 La Peste Llega al Reino',
+    text:'Una terrible plaga se extiende por vuestras tierras. La población huye y los ejércitos se diezman. El pueblo clama a Dios por misericordia.',
+    opts:[
+      {t:'Rezar por intercesión divina (−10 💰, +15 fe)',   fn:G=>{G.gold-=10;G.faith=Math.min(200,G.faith+15);}},
+      {t:'Quemar poblados infectados (−20 ejército, −10 cultura)',fn:G=>{G.mil=Math.max(0,G.mil-20);G.cul=Math.max(0,G.cul-10);}}
+    ]},
+  { id:'crusade', title:'✝ El Papa Proclama la Cruzada',
+    cond:G=>G.rel==='cat',
+    text:'Su Santidad ha proclamado una Santa Cruzada desde Clermont. Caballeros de toda la Cristiandad se unen al llamado. La fe mueve ejércitos.',
+    opts:[
+      {t:'Unirse (+40 fe, +25 ejército, −30 💰)',fn:G=>{G.faith=Math.min(200,G.faith+40);G.mil+=25;G.gold-=30;}},
+      {t:'Ignorar el llamado (−20 fe, −15 prestigio)',      fn:G=>{G.faith-=20;G.pre-=15;}}
+    ]},
+  { id:'jihad', title:'☪ Los Ulemas Proclaman la Yihad',
+    cond:G=>G.rel==='sun',
+    text:'Los sabios islámicos han declarado la Yihad. Las tropas se multiplican en nombre de Alá. El mundo islámico se une contra los invasores.',
+    opts:[
+      {t:'Proclamar la Yihad (+40 fe, +30 ejército, −20 💰)',fn:G=>{G.faith=Math.min(200,G.faith+40);G.mil+=30;G.gold-=20;}},
+      {t:'Mantener la paz (−10 fe)',fn:G=>{G.faith-=10;}}
+    ]},
+  { id:'caravan', title:'🐪 La Caravana de las Especias',
+    text:'Una gran caravana de Oriente solicita paso por vuestros territorios. Traen seda, especias, y conocimientos que el mundo no ha visto.',
+    opts:[
+      {t:'Aceptar el trato (+50 💰, +10 cultura)',fn:G=>{G.gold+=50;G.cul=Math.min(200,G.cul+10);}},
+      {t:'Gravar el paso (+25 💰, −5 prestigio)',fn:G=>{G.gold+=25;G.pre-=5;}}
+    ]},
+  { id:'heresy', title:'⚠️ Herejía en el Reino',
+    text:'Predicadores heréticos cuestionan la Iglesia y la autoridad del rey. El pueblo escucha. Si no actuáis, el reino se dividirá.',
+    opts:[
+      {t:'Reprimir con hierro (−15 cultura, +5 fe)',fn:G=>{G.cul=Math.max(0,G.cul-15);G.faith=Math.min(200,G.faith+5);}},
+      {t:'Debate teológico (−10 fe, +20 cultura)',fn:G=>{G.faith-=10;G.cul=Math.min(200,G.cul+20);}}
+    ]},
+  { id:'harvest', title:'🌾 Cosecha Abundante',
+    text:'Los campos han dado una cosecha sin precedentes. Los graneros rebozan. El pueblo celebra y bendice al rey.',
+    opts:[
+      {t:'Alimentar al ejército (+25 ejército)',fn:G=>{G.mil+=25;}},
+      {t:'Vender el excedente (+45 💰)',fn:G=>{G.gold+=45;}}
+    ]},
+  { id:'relic', title:'✝ Una Sagrada Reliquia',
+    text:'Mercaderes ofrecen lo que afirman es la Vera Cruz. Su autenticidad es dudosa, pero el pueblo la venera con fervor inmenso.',
+    opts:[
+      {t:'Comprar la reliquia (−40 💰, +25 fe, +20 prestigio)',fn:G=>{G.gold-=40;G.faith=Math.min(200,G.faith+25);G.pre+=20;}},
+      {t:'Rechazarla (sin efecto)',fn:G=>{}}
+    ]},
+  { id:'scholar', title:'📚 Sabio en la Corte',
+    text:'Un afamado sabio árabe llega trayendo álgebra, medicina y astronomía. ¿Lo recibiréis con honores o lo expulsaréis?',
+    opts:[
+      {t:'Recibirle (+30 cultura, +10 💰)',fn:G=>{G.cul=Math.min(200,G.cul+30);G.gold+=10;}},
+      {t:'Expulsarle (−20 cultura, +5 fe)',fn:G=>{G.cul=Math.max(0,G.cul-20);G.faith=Math.min(200,G.faith+5);}}
+    ]},
+  { id:'revolt', title:'🗡 Los Nobles se Rebelan',
+    text:'Los barones de vuestro reino exigen más poder y tierras. Su ejército rivaliza con el vuestro. Negociad o aplastadlos.',
+    opts:[
+      {t:'Ceder territorios (pierde 1 región, +15 prestigio)',fn:G=>{loseRnd();G.pre+=15;}},
+      {t:'Reprimir la revuelta (−30 ejército, −25 💰)',fn:G=>{G.mil=Math.max(0,G.mil-30);G.gold-=25;}}
+    ]},
+  { id:'silk', title:'🛒 La Ruta de la Seda Abre',
+    text:'Mercaderes establecen contacto con Catay lejano. Una nueva ruta comercial podría financiar vuestras guerras por décadas.',
+    opts:[
+      {t:'Invertir en la ruta (−50 💰, +15 💰/turno permanente)',fn:G=>{G.gold-=50;G.inc+=15;addLog('Nueva ruta comercial: +15 💰/turno','ev');}},
+      {t:'Ignorarla',fn:G=>{}}
+    ]},
+  { id:'bishop', title:'⛪ El Obispo os Bendice',
+    text:'El obispo de la capital realiza una gran procesión rogando por vuestras victorias. El pueblo se llena de fervor.',
+    opts:[
+      {t:'Celebrar con festejos (−20 💰, +20 fe, +10 prestigio)',fn:G=>{G.gold-=20;G.faith=Math.min(200,G.faith+20);G.pre+=10;}},
+      {t:'Agradecer discretamente (+5 fe)',fn:G=>{G.faith=Math.min(200,G.faith+5);}}
+    ]},
+  { id:'spy', title:'🔍 Red de Espías Descubierta',
+    text:'Habéis descubierto una red de espías de una nación rival en vuestra corte. Tienen acceso a vuestros secretos militares.',
+    opts:[
+      {t:'Ejecutarlos públicamente (+10 prestigio, −5 fe)',fn:G=>{G.pre+=10;G.faith-=5;}},
+      {t:'Interrogar y expulsar (+15 fe, +info estratégica)',fn:G=>{G.faith=Math.min(200,G.faith+15);G.mil+=10;}}
+    ]},
+];
+
+// ─── ESTADO ───
+let G={};
+
+function initGame(fk){
+  const f=FACTIONS[fk];
+  G={
+    fk,name:f.name,rel:f.rel,
+    turn:1,year:1095,al:3,selR:null,phase:'player',over:false,
+    gold:f.g,mil:f.m,faith:f.f,cul:f.c,pre:f.p,inc:f.inc,
+    owners:{},ai:{},wars:[],alliances:[],evQueue:[],
+  };
+  Object.keys(R).forEach(r=>G.owners[r]='neutral');
+  Object.entries(FACTIONS).forEach(([k,fa])=>fa.starts.forEach(r=>{if(r in G.owners)G.owners[r]=k;}));
+  Object.entries(FACTIONS).forEach(([k,fa])=>{
+    if(k===fk)return;
+    G.ai[k]={gold:fa.g,mil:fa.m,faith:fa.f,cul:fa.c,pre:fa.p,inc:fa.inc,rel:fa.rel,name:fa.name,alive:true};
+  });
+  addLog('Anno Domini 1095. El Papa Urbano II predica la Primera Cruzada en Clermont.','ev');
+  addLog(`Tomáis el trono del ${f.name}. ¡Que Dios guíe vuestra espada!`,'inf');
+  addLog('META: 500 puntos de prestigio · O Jerusalén + 8 territorios · 100 turnos límite.','ev');
+}
+
+function pTer(){return Object.entries(G.owners).filter(([r,o])=>o===G.fk).map(([r])=>r);}
+function fTer(k){return Object.entries(G.owners).filter(([r,o])=>o===k).map(([r])=>r);}
+function adjP(rk){const pt=pTer();return CONN.some(([a,b])=>(a===rk&&pt.includes(b))||(b===rk&&pt.includes(a)));}
+
+// ─── RENDER ───
+function renderMap(){
+  const cl=document.getElementById('clayer'),rl=document.getElementById('rlayer'),ll=document.getElementById('llayer');
+  cl.innerHTML='';rl.innerHTML='';ll.innerHTML='';
+
+  CONN.forEach(([a,b])=>{
+    const ra=R[a],rb=R[b];
+    const atWar=G.wars.some(w=>{
+      const at=fTer(w.att),de=fTer(w.def);
+      return(at.includes(a)&&de.includes(b))||(at.includes(b)&&de.includes(a));
+    });
+    const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+    ln.setAttribute('x1',ra.x);ln.setAttribute('y1',ra.y);ln.setAttribute('x2',rb.x);ln.setAttribute('y2',rb.y);
+    if(atWar){ln.classList.add('wline');}
+    else{ln.setAttribute('stroke','rgba(200,169,110,0.18)');ln.setAttribute('stroke-width','1.5');}
+    cl.appendChild(ln);
+  });
+
+  Object.entries(R).forEach(([k,r])=>{
+    const ow=G.owners[k],isP=ow===G.fk,isSel=G.selR===k,isJ=k==='jerusalem';
+    let fc='#2a3848';
+    if(ow!=='neutral'&&FACTIONS[ow])fc=FACTIONS[ow].color;
+    const rad=isJ?19:(r.t==='cap'?15:12);
+    if(isJ){const jg=document.getElementById('jglow');jg.setAttribute('cx',r.x);jg.setAttribute('cy',r.y);}
+
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',r.x);c.setAttribute('cy',r.y);c.setAttribute('r',rad);
+    c.setAttribute('fill',fc);
+    c.setAttribute('stroke',isSel?'#ffdd00':(isP?'rgba(255,255,255,0.9)':'rgba(200,169,110,0.4)'));
+    c.setAttribute('stroke-width',isSel?3:(isP?2:1));
+    if(isJ)c.setAttribute('filter','url(#gf)');
+    c.style.cursor='pointer';
+    c.addEventListener('click',()=>selReg(k));
+    c.addEventListener('mouseenter',e=>showTT(e,k));
+    c.addEventListener('mouseleave',hideTT);
+    rl.appendChild(c);
+
+    if(r.t==='hol'){
+      const sym=document.createElementNS('http://www.w3.org/2000/svg','text');
+      sym.setAttribute('x',r.x);sym.setAttribute('y',r.y+5);sym.setAttribute('text-anchor','middle');
+      sym.setAttribute('fill','#ffe000');sym.setAttribute('font-size',isJ?'14':'10');sym.setAttribute('pointer-events','none');
+      sym.textContent=isJ?'✝':'⛪';ll.appendChild(sym);
+    }
+    const lb=document.createElementNS('http://www.w3.org/2000/svg','text');
+    lb.setAttribute('x',r.x);lb.setAttribute('y',r.y+rad+11);lb.setAttribute('text-anchor','middle');
+    lb.setAttribute('fill',isP?'rgba(255,255,255,0.95)':'rgba(200,169,110,0.75)');
+    lb.setAttribute('font-family',"'IM Fell English',serif");lb.setAttribute('font-size','9');lb.setAttribute('pointer-events','none');
+    const dn=r.n.replace('✝ ','').replace(' ✝','');
+    lb.textContent=dn.length>15?dn.substr(0,14)+'.':dn;ll.appendChild(lb);
+  });
+}
+
+function renderStats(){
+  document.getElementById('s-gold').textContent=G.gold;
+  document.getElementById('s-mil').textContent=G.mil;
+  document.getElementById('s-fai').textContent=G.faith;
+  document.getElementById('s-cul').textContent=G.cul;
+  document.getElementById('s-pre').textContent=G.pre;
+  document.getElementById('s-ter').textContent=pTer().length;
+  document.getElementById('tyear').textContent=G.year+' A.D.';
+  document.getElementById('tnum').textContent=G.turn;
+  document.getElementById('nname').textContent=G.name;
+  document.getElementById('aleft').textContent=G.al;
+}
+
+function renderRInfo(){
+  const d=document.getElementById('rdisp');
+  if(!G.selR){d.innerHTML='<div style="font-size:10px;opacity:.4;font-style:italic;">Haz clic en un territorio del mapa</div>';return;}
+  const r=R[G.selR],ow=G.owners[G.selR];
+  const on=ow==='neutral'?'Tierra de nadie':(ow===G.fk?G.name:(FACTIONS[ow]?.name||ow));
+  const oc=ow===G.fk?(FACTIONS[G.fk].color):(FACTIONS[ow]?.color||'#888');
+  const adj=adjP(G.selR),isO=ow===G.fk;
+  const relTxt=r.rel==='cat'?'✝ Católica':r.rel==='ort'?'☦ Ortodoxa':r.rel==='sun'?'☪ Sunní':'🕌 Diversa';
+  d.innerHTML=`
+    <div style="font-family:'Cinzel',serif;font-size:13px;color:#f0c060;">${r.n}</div>
+    <div style="font-size:10px;margin-top:5px;">Señor: <span style="color:${oc}">${on}</span></div>
+    <div style="font-size:10px;margin-top:7px;line-height:1.9;opacity:.85;">
+      💰 Riqueza: <b>${r.w}</b> &nbsp; 🏰 Defensa: <b>${r.d}</b><br>
+      ${relTxt} &nbsp; ${r.t==='hol'?'⭐ <b>Lugar Sagrado</b>':r.t==='cap'?'🏛 Capital':'🌾 Territorio'}
+    </div>
+    ${adj&&!isO?'<div style="font-size:9px;color:#f0c060;margin-top:6px;font-style:italic;">⚔ Accesible para conquista</div>':''}
+    ${!adj&&!isO?'<div style="font-size:9px;color:#666;margin-top:6px;font-style:italic;">Sin frontera directa</div>':''}
+  `;
+}
+
+function renderActions(){
+  const c=document.getElementById('abtns');
+  const sel=G.selR;
+  const so=sel?G.owners[sel]:null;
+  const isO=sel&&so===G.fk;
+  const adj=sel?adjP(sel):false;
+  const isEn=sel&&so!==G.fk&&so!=='neutral';
+  const isNeu=sel&&so==='neutral';
+  const atWar=G.wars.some(w=>(w.att===G.fk&&w.def===so)||(w.def===G.fk&&w.att===so));
+  const isAll=G.alliances.some(a=>a.includes(G.fk)&&a.includes(so));
+
+  const acts=[
+    {ic:'⚔️',lb:'Reclutar Tropas',     ds:'+30 ejército',             co:'−35 💰', ok:G.gold>=35,
+     fn:()=>{G.gold-=35;G.mil+=30;addLog(`Nuevas tropas reclutadas. Ejército: ${G.mil}`,'inf');act();}},
+    {ic:'💰',lb:'Recaudar Impuestos',   ds:`+${pTer().length*15} oro (${pTer().length} terr.)`, co:'',   ok:true,
+     fn:()=>{const a=pTer().length*15;G.gold+=a;addLog(`Tributos recaudados: +${a} 💰`,'inf');act();}},
+    {ic:'🏰',lb:'Fortalecer Defensa',   ds:'Defensa del territorio +12', co:'−40 💰', ok:isO&&G.gold>=40,
+     fn:()=>{G.gold-=40;R[sel].d+=12;addLog(`${R[sel].n} reforzada. Defensa: ${R[sel].d}`,'inf');act();}},
+    {ic:'⚔', lb:atWar?'Atacar Territorio':'Declarar Guerra',
+              ds:adj&&sel?`vs ${R[sel]?.n||'?'}`:'Selecciona objetivo en mapa',
+              co:'−15 ⚔', ok:adj&&(isEn||isNeu)&&G.mil>=20,
+     fn:()=>{
+       if(!atWar&&isEn){G.wars.push({att:G.fk,def:so,t:0});addLog(`⚔ ¡Guerra declarada contra ${FACTIONS[so]?.name||so}!`,'wa');}
+       doAtk(sel);act();
+     }},
+    {ic:'✝', lb:'Misión Religiosa',     ds:'+20 fe, posible conversión', co:'−20 💰', ok:G.gold>=20,
+     fn:()=>{G.gold-=20;G.faith=Math.min(200,G.faith+20);if(adj&&!isO&&Math.random()<.3){addLog(`${R[sel]?.n||''} simpatiza con vuestra fe.`,'ev');G.pre+=8;}addLog(`Misioneros enviados. Fe: ${G.faith}`,'inf');act();}},
+    {ic:'🎭',lb:'Mecenazgo Cultural',    ds:'+25 cultura, +8 prestigio',  co:'−30 💰', ok:G.gold>=30,
+     fn:()=>{G.gold-=30;G.cul=Math.min(200,G.cul+25);G.pre+=8;addLog(`Letras y artes florecen. Cultura: ${G.cul}`,'inf');act();}},
+    {ic:'🤝',lb:'Ofrecer Alianza',       ds:adj&&isEn?`A ${FACTIONS[so]?.name||so}`:'Selecciona vecino',  co:'−20 💰', ok:adj&&isEn&&!isAll&&G.gold>=20,
+     fn:()=>{G.gold-=20;if(Math.random()<.55){G.alliances.push([G.fk,so]);G.wars=G.wars.filter(w=>!((w.att===G.fk&&w.def===so)||(w.def===G.fk&&w.att===so)));addLog(`Alianza sellada con ${FACTIONS[so]?.name||so}`,'pe');}else{addLog(`${FACTIONS[so]?.name||so} rechaza la alianza.`,'inf');}act();}},
+    {ic:'🏗',lb:'Construir Mercado',     ds:'+10 💰/turno permanente',    co:'−60 💰', ok:isO&&G.gold>=60,
+     fn:()=>{G.gold-=60;G.inc+=10;addLog(`Mercado en ${R[sel].n}: +10 💰/turno permanente`,'ev');act();}},
+  ];
+
+  c.innerHTML='';
+  acts.forEach(a=>{
+    const b=document.createElement('button');
+    b.className='abtn';
+    b.disabled=!a.ok||G.al<=0||G.phase!=='player';
+    b.innerHTML=`<span class="ai">${a.ic}</span><div style="flex:1"><div>${a.lb}</div><div style="font-size:9px;opacity:.65;">${a.ds}</div></div><span class="ac">${a.co}</span>`;
+    b.onclick=a.fn;
+    c.appendChild(b);
+  });
+}
+
+function render(){renderMap();renderStats();renderRInfo();renderActions();}
+
+// ─── LÓGICA ───
+function selReg(k){G.selR=G.selR===k?null:k;render();}
+
+function showTT(e,k){
+  const r=R[k],ow=G.owners[k];
+  const on=ow==='neutral'?'Sin dueño':(FACTIONS[ow]?.name||ow);
+  const t=document.getElementById('tt');
+  t.innerHTML=`<b>${r.n}</b><br>${on}<br>💰${r.w} 🏰${r.d}`;
+  t.style.display='block';t.style.left=(e.clientX+14)+'px';t.style.top=(e.clientY-10)+'px';
+}
+function hideTT(){document.getElementById('tt').style.display='none';}
+
+function doAtk(rk){
+  const rg=R[rk],do_=G.owners[rk];
+  let atk=G.mil+Math.floor(Math.random()*35)-10;
+  let def=rg.d+12+Math.floor(Math.random()*25);
+  if(do_!=='neutral'&&G.ai[do_])def+=Math.floor(G.ai[do_].mil/5);
+  if(G.rel==='cat'&&rk==='jerusalem')atk+=25;
+  if(G.rel==='sun'&&rk==='jerusalem')atk+=20;
+  G.mil=Math.max(0,G.mil-12);
+  if(atk>def){
+    const prev=G.owners[rk];G.owners[rk]=G.fk;G.pre+=22;
+    if(prev!=='neutral'&&G.ai[prev]){G.ai[prev].mil=Math.max(0,G.ai[prev].mil-18);}
+    addLog(`⚔ ¡Victoria! ${rg.n} es vuestra. (+22 prestigio)`,'wa');
+    if(rk==='jerusalem'){addLog('✝ ¡DIOS LO QUIERE! ¡La Ciudad Santa es tuya! ¡Gloria eterna!','ev');G.faith=Math.min(200,G.faith+60);G.pre+=60;}
+  } else {
+    addLog(`⚔ Derrota ante ${rg.n}. Las tropas retroceden. (−12 ejército)`,'wa');G.pre=Math.max(0,G.pre-5);
+  }
+  checkV();
+}
+
+function loseRnd(){
+  const t=pTer();if(t.length>1){const r=t[Math.floor(Math.random()*t.length)];G.owners[r]='neutral';addLog(`${R[r].n} se independiza.`,'wa');}
+}
+
+function act(){G.al--;render();}
+
+function addLog(msg,type='inf'){
+  const lp=document.getElementById('logp');
+  const e=document.createElement('div');
+  e.className=`le ${type}`;e.textContent=`[${G.year}] ${msg}`;
+  lp.insertBefore(e,lp.firstChild);
+  while(lp.children.length>60)lp.removeChild(lp.lastChild);
+}
+
+// ─── IA ───
+function doAI(){
+  Object.entries(G.ai).forEach(([k,ai])=>{
+    if(!ai.alive)return;
+    const mr=fTer(k);if(!mr.length){ai.alive=false;return;}
+    ai.gold+=ai.inc+mr.length*7;
+    const n=Math.floor(Math.random()*3)+1;
+    for(let i=0;i<n;i++){
+      const roll=Math.random();
+      if(roll<0.38&&ai.gold>=28){ai.mil+=18;ai.gold-=28;}
+      else if(roll<0.65&&ai.mil>=25){
+        const tgts=[];
+        CONN.forEach(([a,b])=>{
+          if(mr.includes(a)&&G.owners[b]!==k)tgts.push(b);
+          if(mr.includes(b)&&G.owners[a]!==k)tgts.push(a);
+        });
+        if(tgts.length){
+          const tg=tgts[Math.floor(Math.random()*tgts.length)];
+          const dw=G.owners[tg];
+          if(G.alliances.some(a=>a.includes(k)&&a.includes(dw)))continue;
+          const ap=ai.mil+Math.random()*25,dp=R[tg].d+8+Math.random()*20+(dw!=='neutral'&&G.ai[dw]?G.ai[dw].mil/6:0);
+          if(ap>dp){
+            const pv=G.owners[tg];G.owners[tg]=k;ai.mil-=8;
+            if(pv!=='neutral'&&G.ai[pv])G.ai[pv].mil=Math.max(0,G.ai[pv].mil-14);
+            if(pv===G.fk){addLog(`⚠ ${FACTIONS[k].name} conquista ${R[tg].n} de vuestras tierras!`,'wa');G.pre=Math.max(0,G.pre-10);}
+            else if(Math.random()<0.12)addLog(`${FACTIONS[k].name} conquista ${R[tg].n}.`,'ai');
+          }
+        }
+      } else {ai.cul=Math.min(200,ai.cul+8);}
+    }
+  });
+}
+
+// ─── EVENTOS ───
+function rollEv(){
+  if(Math.random()<0.42){
+    const el=EVENTS.filter(e=>!e.cond||e.cond(G));
+    if(el.length){const ev=el[Math.floor(Math.random()*el.length)];G.evQueue.push(ev);if(G.evQueue.length===1)showEv(ev);return true;}
+  }return false;
+}
+
+function showEv(ev){
+  document.getElementById('mtitle').textContent=ev.title;
+  document.getElementById('mtext').textContent=ev.text;
+  const b1=document.getElementById('mb1'),b2=document.getElementById('mb2');
+  b1.textContent=ev.opts[0].t;b1.onclick=()=>{ev.opts[0].fn(G);closeEv();};
+  if(ev.opts.length>1){b2.style.display='block';b2.textContent=ev.opts[1].t;b2.onclick=()=>{ev.opts[1].fn(G);closeEv();};}
+  else b2.style.display='none';
+  document.getElementById('modal').classList.add('on');
+}
+
+function closeEv(){
+  document.getElementById('modal').classList.remove('on');
+  G.evQueue.shift();
+  if(G.evQueue.length)showEv(G.evQueue[0]);
+  else finishTurn();
+}
+
+// ─── TURNO ───
+function endTurn(){
+  if(G.phase!=='player'||G.over)return;
+  G.phase='proc';
+  G.gold+=G.inc+pTer().length*8;
+  if(G.owners['jerusalem']===G.fk){G.faith=Math.min(200,G.faith+22);G.pre+=12;}
+  if(G.owners['estados_papales']===G.fk&&G.rel==='cat'){G.pre+=10;G.faith=Math.min(200,G.faith+10);}
+  G.pre=Math.max(0,G.pre-1);
+  if(G.cul>80)G.pre+=Math.floor((G.cul-80)/25);
+  if(G.faith>90)G.pre+=Math.floor((G.faith-90)/30);
+  if(G.gold<-50){G.mil=Math.max(0,G.mil-15);addLog('⚠ Arcas vacías. Los soldados desertan. (−15 ejército)','wa');}
+  G.wars.forEach(w=>{if(w.att===G.fk||w.def===G.fk){G.gold-=8;w.t++;}});
+  // England bonus
+  if(G.fk==='england'&&G.turn%3===0){G.mil+=10;addLog('🏰 Refuerzos ingleses llegan. (+10 ejército)','ev');}
+  // France culture bonus
+  if(G.fk==='france'){G.cul=Math.min(200,G.cul+3);}
+  doAI();
+  G.turn++;G.year=1095+G.turn-1;G.al=3;
+  if(!rollEv())finishTurn();
+}
+
+function finishTurn(){G.phase='player';checkV();checkD();render();}
+
+function checkV(){
+  if(G.over)return;
+  if(G.pre>=500){end(true,`Con ${G.pre} puntos de prestigio, vuestro nombre resuena en toda la Cristiandad y el Islam. Sois el poder supremo de la Era de las Cruzadas. Los siglos venideros os recordarán.`);return;}
+  if(G.owners['jerusalem']===G.fk&&pTer().length>=8){end(true,`¡Dios lo quiere! Controlando la Ciudad Santa y ${pTer().length} territorios, habéis logrado lo que Papas y Califas soñaron. Vuestra gloria es eterna.`);return;}
+}
+
+function checkD(){
+  if(G.over)return;
+  if(!pTer().length){end(false,'Vuestros ejércitos han sido derrotados y vuestras tierras conquistadas. El nombre de vuestro reino se apaga en las páginas de la historia.');return;}
+  if(G.gold<-150&&G.mil<10){end(false,'La bancarrota destruye el reino. Sin oro ni ejércitos, los nobles os abandonan y los enemigos devoran vuestras tierras.');return;}
+  if(G.turn>100){end(false,`Han pasado 100 años. Con ${G.pre} puntos de prestigio, vuestro reino no logró la supremacía. Solo seréis una nota al pie de la historia.`);return;}
+}
+
+function end(vic,txt){
+  G.over=true;
+  document.getElementById('ettl').textContent=vic?'✝ VICTORIA ✝':'⚔ DERROTA ⚔';
+  document.getElementById('ettl').className='ettl '+(vic?'vic':'def');
+  document.getElementById('esub').textContent=txt;
+  document.getElementById('endscr').classList.add('on');
+  document.getElementById('endscr').style.display='flex';
+}
+
+// ─── INICIO ───
+function buildGrid(){
+  const g=document.getElementById('fgrid');g.innerHTML='';
+  Object.entries(FACTIONS).forEach(([k,f])=>{
+    const rc=f.rel==='cat'?'cat':f.rel==='ort'?'ort':'sun';
+    const rn=f.rel==='cat'?'✝ Católico':f.rel==='ort'?'☦ Ortodoxo':'☪ Islam Sunní';
+    const card=document.createElement('div');card.className='fcard';
+    card.innerHTML=`<div class="ff">${f.flag}</div><div class="fn">${f.name}</div><div class="fd">${f.desc}</div><div class="fr ${rc}">${rn}</div><div class="fb" style="color:rgba(200,169,110,0.6)">${f.bonus}</div><div class="fdif">${f.dif}</div>`;
+    card.onclick=()=>startGame(k);
+    g.appendChild(card);
+  });
+}
+
+function startGame(fk){
+  document.getElementById('start').style.display='none';
+  document.getElementById('game').classList.add('on');
+  initGame(fk);render();
+}
+
+buildGrid();
+</script>
+</body>
+</html>
